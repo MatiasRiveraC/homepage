@@ -1,0 +1,23 @@
+# Personal config (hosts, IPs, names). Use config.example.yaml as the template.
+config.yaml
+
+# Secrets
+.env
+.env.*
+
+# Local backups & archives
+*.zip
+*.bak
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor / tooling
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

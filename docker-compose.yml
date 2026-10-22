@@ -1,0 +1,12 @@
+services:
+  homepage:
+    build: .
+    container_name: homepage
+    ports:
+      - "3000:5000"
+    volumes:
+      # config.yaml lives on your host — edit freely, save from the UI
+      - ./config.yaml:/config/config.yaml
+    environment:
+      - CONFIG_PATH=/config/config.yaml
+    restart: unless-stopped
