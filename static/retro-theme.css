@@ -1,0 +1,157 @@
+/* Homepage rules for the "Retro" theme (classic beveled desktop look).
+   Loaded together with retro-ui.css only while that theme is selected; <html> then has
+   class "rb". The page is one maximized window on a teal desktop with a taskbar. */
+
+.rb body {
+  background: var(--rb-desktop); color: #000; font-family: var(--rb-font); font-size: 11px;
+  padding-bottom: 28px; cursor: default; transition: none;
+}
+.rb body::before { display: none; }
+.rb *, .rb *::before, .rb *::after { transition: none !important; }
+.rb ::selection { background: var(--rb-navy); color: #fff; }
+
+/* ── The window ── */
+.rb .app-window {
+  display: flex; flex-direction: column; flex: 1; min-height: calc(100vh - 28px);
+  background: var(--rb-face); box-shadow: var(--rb-raised); padding: 3px;
+}
+.rb .app-window.restored { margin: 16px 24px; min-height: calc(100vh - 60px); }
+.rb .app-window.minimized { display: none; }
+
+/* Title bar (the header) */
+.rb header { background: var(--rb-title-active); color: #fff; padding: 2px 2px 2px 3px; border: 0; min-height: 18px; user-select: none; }
+.rb header::after { display: none; }
+.rb .header-left { gap: 3px; min-width: 0; }
+.rb .site-logo { width: 16px; height: 16px; }
+.rb .header-text { flex-direction: row; align-items: baseline; gap: 0; min-width: 0; white-space: nowrap; overflow: hidden; }
+.rb .greeting, .rb .palette-btn, .rb .header-right > div:not(.title-bar-controls) { display: none; }
+.rb .site-title { font: bold 11px var(--rb-font); color: #fff; letter-spacing: 0; margin: 0; }
+.rb .site-subtitle { font: bold 11px var(--rb-font); color: #fff; overflow: hidden; text-overflow: ellipsis; }
+.rb .site-subtitle:not(:empty)::before { content: " - "; white-space: pre; }
+.rb .header-right { gap: 0; flex: none; }
+.rb .title-bar-controls button[aria-label="Close"]:disabled {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='8' shape-rendering='crispEdges'><path transform='translate(1 1)' d='M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z' fill='white'/><path d='M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z' fill='%23808080'/></svg>");
+}
+
+/* Tab strip and the panel under it */
+.rb nav { border: 0; padding: 6px 3px 0; position: relative; z-index: 1; }
+.rb .tab-btn, .rb .tab-btn:not(:disabled):active {
+  font: 11px var(--rb-font); letter-spacing: 0; text-transform: none; color: #000;
+  min-width: 0; min-height: 0; padding: 3px 9px 2px; margin: 2px -1px 0 0;
+  background: var(--rb-face); border: 0; position: relative;
+  box-shadow: inset -1px 0 #000, inset 1px 1px #fff, inset -2px 0 #808080, inset 2px 2px #dfdfdf;
+}
+.rb .tab-btn:hover { color: #000; }
+.rb .tab-btn.active, .rb .tab-btn.active:not(:disabled):active { margin-top: 0; padding-top: 5px; margin-bottom: -2px; z-index: 2; color: #000; }
+.rb .tab-panel { margin: 0 3px 3px; }
+
+/* ── Dashboard: group boxes with a white "large icons" pane ── */
+.rb #panel-dashboard { padding: 12px 10px 10px; gap: 16px; }
+.rb .group {
+  opacity: 1; transform: none; animation: none; position: relative; padding: 12px 8px 8px;
+  border: 1px solid var(--rb-shadow); box-shadow: 1px 1px 0 #fff, inset 1px 1px 0 #fff;
+}
+.rb .group-label {
+  position: absolute; top: -7px; left: 8px; margin: 0; padding: 0 3px; display: block;
+  background: var(--rb-face); font: 11px var(--rb-font); letter-spacing: 0; text-transform: none; color: #000;
+}
+.rb .group-label::after { display: none; }
+.rb .cards {
+  background: #fff; box-shadow: var(--rb-field); border: 0; padding: 8px 6px;
+  gap: 10px 4px; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+}
+.rb .card { background: none; border: 0; margin: 0; padding: 2px; align-items: center; text-align: center; gap: 4px; color: #000; overflow: visible; }
+.rb .card::before, .rb .card-desc, .rb .card-url { display: none; }
+.rb .card:hover { background: none; }
+.rb .card-icon { font-size: 28px; line-height: 32px; height: 32px; margin: 0; }
+.rb .card-name { font: 11px var(--rb-font); color: #000; padding: 1px 2px; word-break: break-word; }
+.rb .card:hover .card-name, .rb .card:focus-visible .card-name { background: var(--rb-navy); color: #fff; outline: 1px dotted #ff0; outline-offset: -1px; }
+.rb .card:focus-visible { outline: none; }
+
+/* Server status as a status bar */
+.rb .status-strip {
+  background: var(--rb-face); border: 0; box-shadow: inset -1px -1px #fff, inset 1px 1px #808080;
+  padding: 3px 6px; gap: 8px; font: 11px var(--rb-font); letter-spacing: 0; text-transform: none;
+}
+.rb .status-strip:hover { border: 0; }
+.rb .status-dot { width: 9px; height: 9px; border: 1px solid #000; }
+.rb .status-text { color: #000; }
+.rb .status-sub, .rb .status-counts { color: #000; }
+.rb .status-counts b.crit { color: #c00000; }
+.rb .status-counts b.warn { color: #806000; }
+
+/* ── Monitor tab: the monitor page in a sunken pane (it styles itself, see syncMonitorTheme) ── */
+.rb #panel-monitor { padding: 2px; background: #fff; box-shadow: var(--rb-field); }
+.rb #monitor-frame { min-height: calc(100vh - 92px); background: var(--rb-face); }
+
+/* ── Editor ── */
+.rb #panel-editor { padding: 10px; gap: 10px; }
+.rb .editor-title { font: bold 11px var(--rb-font); letter-spacing: 0; text-transform: none; color: #000; }
+.rb .btn { font: 11px var(--rb-font); letter-spacing: 0; text-transform: none; border: 0; color: #000; background: var(--rb-face); }
+.rb .btn:hover { background: var(--rb-face); border: 0; color: #000; }
+.rb .btn-accent, .rb .btn-accent:hover {
+  filter: none; font-weight: bold;
+  box-shadow: inset -2px -2px #000, inset 2px 2px #000, inset -3px -3px #808080, inset 3px 3px #fff, inset -4px -4px #808080, inset 4px 4px #dfdfdf;
+}
+.rb .btn-accent:not(:disabled):active { box-shadow: inset -1px -1px #000, inset 1px 1px #000, inset -2px -2px #808080, inset 2px 2px #808080; }
+.rb #save-status { font: 11px var(--rb-font); letter-spacing: 0; color: #000; }
+.rb #save-status.ok { color: #006000; }
+.rb #save-status.err { color: #c00000; }
+.rb .editor-group { background: var(--rb-face); border: 1px solid var(--rb-shadow); box-shadow: 1px 1px 0 #fff, inset 1px 1px 0 #fff; }
+.rb .editor-group-header { border: 0; padding: 6px 8px; }
+.rb .service-row-header { background: none; border: 0; padding: 2px 8px; }
+.rb .service-row-header span { font: 11px var(--rb-font); letter-spacing: 0; text-transform: none; color: #000; }
+.rb .service-row { border: 0; padding: 2px 8px; }
+.rb .service-row:hover { background: none; }
+.rb .group-name-input { font-weight: bold; max-width: 220px; }
+.rb .svc-input::placeholder, .rb .emoji-search::placeholder { color: var(--rb-shadow); }
+.rb .emoji-pick-btn, .rb .emoji-pick-btn:not(:disabled):active { min-width: 0; width: 32px; height: 23px; padding: 0; font-size: 14px; border: 0; background: var(--rb-face); }
+.rb .svc-delete, .rb .svc-delete:not(:disabled):active { min-width: 0; width: 23px; height: 21px; padding: 0; font-size: 11px; color: #000; background: var(--rb-face); }
+.rb .add-service-btn { margin: 4px 8px 8px !important; }
+
+/* ── Dialogs: theme picker and emoji picker (no dimming, like classic dialogs) ── */
+.rb .theme-modal-overlay, .rb .emoji-modal-overlay { background: transparent; }
+.rb .theme-modal, .rb .emoji-modal { background: var(--rb-face); border: 0; box-shadow: var(--rb-raised); padding: 3px; }
+.rb .theme-modal-header { background: var(--rb-title-active); border: 0; padding: 2px 2px 2px 3px; }
+.rb .theme-modal-title { font: bold 11px var(--rb-font); letter-spacing: 0; text-transform: none; color: #fff; }
+.rb .theme-modal-close, .rb .emoji-modal-close,
+.rb .theme-modal-close:not(:disabled):active, .rb .emoji-modal-close:not(:disabled):active {
+  min-width: 16px; width: 16px; height: 14px; min-height: 0; padding: 0; font-size: 0; color: transparent;
+  background: var(--rb-face) no-repeat center url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='7' shape-rendering='crispEdges'><path d='M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z' fill='black'/></svg>");
+}
+.rb .theme-modal-close:not(:disabled):active, .rb .emoji-modal-close:not(:disabled):active { box-shadow: var(--rb-pressed); background-position: 51% 55%; }
+.rb .theme-grid { padding: 8px; gap: 6px; }
+.rb .theme-swatch, .rb .theme-swatch:not(:disabled):active {
+  min-width: 0; min-height: 23px; padding: 4px 6px; border: 0; background: var(--rb-face); text-align: left; gap: 6px;
+}
+.rb .theme-swatch:hover { border: 0; }
+.rb .theme-swatch.active { box-shadow: var(--rb-pressed); background: repeating-conic-gradient(#c0c0c0 0% 25%, #fff 0% 50%) 0 0 / 2px 2px; }
+.rb .swatch-dot { outline: 1px solid #000 !important; }
+.rb .swatch-name { font: 11px var(--rb-font); letter-spacing: 0; text-transform: none; color: #000; }
+.rb .theme-swatch.active .swatch-name { font-weight: bold; }
+
+.rb .emoji-modal-header { border: 0; padding: 4px 3px; }
+.rb .emoji-search { background: #fff; color: #000; border: 0; box-shadow: var(--rb-field); font: 11px var(--rb-font); height: 21px; padding: 3px 4px; }
+.rb .emoji-categories { border: 0; border-bottom: 1px solid var(--rb-shadow); box-shadow: 0 1px #fff; }
+.rb .emoji-cat-btn, .rb .emoji-cat-btn:not(:disabled):active {
+  min-width: 0; min-height: 0; padding: 2px 6px; font: 11px var(--rb-font); color: #000;
+  background: transparent; box-shadow: none; border: 1px solid transparent;
+}
+.rb .emoji-cat-btn:hover { border-color: #fff #808080 #808080 #fff; }
+.rb .emoji-cat-btn.active { border-color: #808080 #fff #fff #808080; }
+.rb .emoji-grid { background: #fff; box-shadow: var(--rb-field); margin: 4px 3px 3px; }
+.rb .emoji-btn, .rb .emoji-btn:not(:disabled):active { min-width: 0; min-height: 0; padding: 0; background: transparent; box-shadow: none; border: 1px solid transparent; }
+.rb .emoji-btn:hover { background: transparent; border-color: #fff #808080 #808080 #fff; }
+.rb .emoji-no-results { font: 11px var(--rb-font); letter-spacing: 0; color: #000; }
+
+/* ── Taskbar (the footer) and its menu ── */
+.rb footer { padding: 2px; border: 0; justify-content: flex-start; font: 11px var(--rb-font); letter-spacing: 0; color: #000; }
+.rb #footer-count, .rb .footer-sys { display: none; }
+.rb .menu-button svg, .rb .task-button img { width: 16px; height: 16px; flex: none; }
+.rb .menu-panel .entry { cursor: default; }
+.rb .menu-panel .entry:focus-visible { outline: 1px dotted #000; outline-offset: -2px; }
+
+@media (max-width: 700px) {
+  .rb .app-window.restored { margin: 0; }
+  .rb .cards { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
+}

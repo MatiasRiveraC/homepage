@@ -12,6 +12,7 @@
       --bg:#0e0f11;--surface:#161719;--surface2:#1c1e21;--border:#2a2c31;
       --accent:#e8ff5a;--red:#ff5a5a;--muted:#555860;--text:#d4d6db;--dim:#7c7f88;
       --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+      --on-accent:var(--bg);--frame-bg:var(--bg); /* passed to the Monitor tab; a theme may override them */
     }
     [data-theme="terminal"]{--bg:#0d1117;--surface:#161b22;--surface2:#1c2128;--border:#30363d;--accent:#39d353;--muted:#484f58;--text:#c9d1d9;--dim:#8b949e}
     [data-theme="nord"]{--bg:#2e3440;--surface:#3b4252;--surface2:#434c5e;--border:#4c566a;--accent:#88c0d0;--muted:#616e88;--text:#eceff4;--dim:#d8dee9}
@@ -28,6 +29,11 @@
     [data-theme="ocean"]{--bg:#0c1821;--surface:#162433;--surface2:#1e3045;--border:#2a4a66;--accent:#06b6d4;--muted:#2d4f6a;--text:#cae0f0;--dim:#7ab8d4}
     [data-theme="slate"]{--bg:#0f172a;--surface:#1e293b;--surface2:#293548;--border:#334155;--accent:#f472b6;--muted:#475569;--text:#f1f5f9;--dim:#94a3b8}
     [data-theme="light"]{--bg:#f5f5f0;--surface:#ffffff;--surface2:#e8e8e2;--border:#d0d0c8;--accent:#1a1a1a;--muted:#aaaaa0;--text:#1a1a1a;--dim:#666660;--red:#dc2626}
+    /* Retro: classic beveled desktop. Most of it is in static/retro-ui.css + static/retro-theme.css,
+       loaded only while this theme is on (html.rb); these variables also colour the Monitor tab. */
+    [data-theme="retro"]{--bg:#008080;--surface:#c0c0c0;--surface2:#dfdfdf;--border:#808080;--accent:#000080;--muted:#808080;--text:#000000;--dim:#404040;--red:#c00000;--on-accent:#ffffff;--frame-bg:#c0c0c0}
+    html:not(.rb) .rb-only{display:none!important}
+    .app-window{display:contents} /* a real window only in the Retro theme */
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;transition:background .25s,color .25s}
@@ -177,9 +183,46 @@
       .theme-grid{grid-template-columns:repeat(2,1fr)}
     }
   </style>
+  <link rel="stylesheet" id="rb-css" href="/static/retro-ui.css" media="not all">
+  <link rel="stylesheet" id="rb-theme-css" href="/static/retro-theme.css" media="not all">
+  <script>
+    // Apply the saved theme before the first paint (Retro also switches on its stylesheets)
+    (function(){
+      var t; try { t = localStorage.getItem('hl-theme'); } catch(e) {}
+      if (t && t !== 'default') document.documentElement.dataset.theme = t;
+      if (t === 'retro') {
+        document.documentElement.classList.add('rb');
+        document.getElementById('rb-css').media = document.getElementById('rb-theme-css').media = 'all';
+      }
+    })();
+  </script>
 </head>
 <body>
 
+<!-- Pixel icons for the Retro theme's taskbar and menu -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-computer" viewBox="0 0 16 16" shape-rendering="crispEdges">
+    <rect x="1" y="1" width="14" height="10" fill="#c0c0c0" stroke="#000"/><rect x="3" y="3" width="10" height="6" fill="#008080" stroke="#808080"/>
+    <rect x="5" y="12" width="6" height="2" fill="#c0c0c0" stroke="#000"/><rect x="3" y="14" width="10" height="1" fill="#000"/>
+  </symbol>
+  <symbol id="i-folder" viewBox="0 0 16 16" shape-rendering="crispEdges">
+    <path d="M1 3h5l1 2h8v9H1z" fill="#ffff80" stroke="#000"/><path d="M2 7h12" stroke="#fff"/>
+  </symbol>
+  <symbol id="i-doc" viewBox="0 0 16 16" shape-rendering="crispEdges">
+    <path d="M3 1h7l3 3v11H3z" fill="#fff" stroke="#000"/><path d="M10 1v3h3" fill="#c0c0c0" stroke="#000"/>
+    <path d="M5 7h6M5 9h6M5 11h6" stroke="#808080"/>
+  </symbol>
+  <symbol id="i-palette" viewBox="0 0 16 16" shape-rendering="crispEdges">
+    <path d="M3 1h9l3 3v6l-2 2H9v3H5l-4-4V3z" fill="#c0c0c0" stroke="#000"/>
+    <rect x="4" y="4" width="2" height="2" fill="#f00"/><rect x="8" y="3" width="2" height="2" fill="#0c0"/>
+    <rect x="11" y="6" width="2" height="2" fill="#00f"/><rect x="4" y="8" width="2" height="2" fill="#ff0"/>
+  </symbol>
+  <symbol id="i-menu" viewBox="0 0 16 16" shape-rendering="crispEdges">
+    <path d="M8 1l2 5h5l-4 3 2 6-5-4-5 4 2-6-4-3h5z" fill="#ffff00" stroke="#000"/>
+  </symbol>
+</svg>
+
+<div class="app-window" id="app-window">
 <header>
   <div class="header-left">
     <img src="/favicon.svg" class="site-logo" alt="logo">
@@ -192,6 +235,11 @@
   <div class="header-right">
     <div><div id="clock">--:--:--</div><div id="date"></div></div>
     <button class="palette-btn" id="palette-btn"><span class="palette-dot"></span>Theme</button>
+    <div class="rb-only title-bar-controls">
+      <button aria-label="Minimize" id="rb-min" title="Minimize"></button>
+      <button aria-label="Restore" id="rb-max" title="Restore / maximize"></button>
+      <button aria-label="Close" disabled title="The homepage stays open"></button>
+    </div>
   </div>
 </header>
 
@@ -244,10 +292,27 @@
   </div>
 </div>
 
-<footer>
+</div><!-- .app-window -->
+
+<footer class="taskbar">
+  <button class="rb-only menu-button" id="rb-menu-btn"><svg width="16" height="16"><use href="#i-menu"/></svg>Menu</button>
+  <span class="rb-only divider"></span>
+  <div class="rb-only taskbar-tasks"><button class="task-button active" id="rb-task"><img src="/favicon.svg" alt="">Homelab</button></div>
   <span id="footer-count">—</span>
-  <span>sys/homepage</span>
+  <span class="footer-sys">sys/homepage</span>
+  <div class="rb-only tray"><span id="rb-clock"></span></div>
 </footer>
+
+<div class="rb-only menu-panel" id="rb-menu" role="menu">
+  <div class="banner"><b>Home<i>lab</i></b></div>
+  <div class="items">
+    <div class="entry" role="menuitem" tabindex="0" data-tab="dashboard"><svg class="glyph"><use href="#i-folder"/></svg><span><u>D</u>ashboard</span></div>
+    <div class="entry" role="menuitem" tabindex="0" data-tab="monitor"><svg class="glyph"><use href="#i-computer"/></svg><span><u>M</u>onitor</span></div>
+    <div class="entry" role="menuitem" tabindex="0" data-tab="editor"><svg class="glyph"><use href="#i-doc"/></svg><span><u>E</u>dit services</span></div>
+    <div class="sep"></div>
+    <div class="entry" role="menuitem" tabindex="0" data-action="theme"><svg class="glyph"><use href="#i-palette"/></svg><span>Color <u>t</u>heme...</span></div>
+  </div>
+</div>
 
 <script>
 // ── Themes ─────────────────────────────────────────────────────────────────
@@ -268,6 +333,7 @@ const THEMES = [
   {id:'ocean',      name:'Ocean',      bg:'#0c1821',surface:'#162433',accent:'#06b6d4'},
   {id:'slate',      name:'Slate',      bg:'#0f172a',surface:'#1e293b',accent:'#f472b6'},
   {id:'light',      name:'Light',      bg:'#f5f5f0',surface:'#ffffff',accent:'#1a1a1a'},
+  {id:'retro',      name:'Retro',      bg:'#008080',surface:'#c0c0c0',accent:'#000080'},
 ];
 const THEME_KEY = 'hl-theme';
 let currentTheme = localStorage.getItem(THEME_KEY) || 'default';
@@ -275,14 +341,17 @@ let currentTheme = localStorage.getItem(THEME_KEY) || 'default';
 function applyTheme(id) {
   currentTheme = id;
   document.documentElement.dataset.theme = id === 'default' ? '' : id;
+  const retro = id === 'retro';
+  document.documentElement.classList.toggle('rb', retro);
+  ['rb-css','rb-theme-css'].forEach(l => document.getElementById(l).media = retro ? 'all' : 'not all');
   localStorage.setItem(THEME_KEY, id);
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === id));
   syncMonitorTheme();
 }
 
 // The monitor page (same origin through /monitor/) takes this page's theme colours
-const MONITOR_THEME_VARS = {'--bg':'--bg','--panel':'--surface','--panel-2':'--surface2','--border':'--border',
-  '--text':'--text','--muted':'--dim','--accent':'--accent','--on-accent':'--bg','--crit':'--red'};
+const MONITOR_THEME_VARS = {'--bg':'--frame-bg','--panel':'--surface','--panel-2':'--surface2','--border':'--border',
+  '--text':'--text','--muted':'--dim','--accent':'--accent','--on-accent':'--on-accent','--crit':'--red'};
 function syncMonitorTheme(){
   const frame = document.getElementById('monitor-frame');
   const doc = frame && frame.contentDocument;
@@ -290,6 +359,7 @@ function syncMonitorTheme(){
   const cs = getComputedStyle(document.documentElement);
   for (const [monitorVar, ownVar] of Object.entries(MONITOR_THEME_VARS))
     doc.documentElement.style.setProperty(monitorVar, cs.getPropertyValue(ownVar).trim());
+  doc.documentElement.classList.toggle('theme-retro', currentTheme === 'retro'); // its bevelled look
 }
 
 function buildThemeGrid() {
@@ -398,6 +468,7 @@ function updateClock(){
   const n=new Date();
   document.getElementById('clock').textContent=n.toLocaleTimeString('en-GB',{hour12:false});
   document.getElementById('date').textContent=n.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+  document.getElementById('rb-clock').textContent=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
 updateClock(); setInterval(updateClock,1000);
 
@@ -486,6 +557,7 @@ function renderDashboard(){
       a.href=svc.url||'#';
       a.target='_blank';
       a.rel='noopener noreferrer';
+      a.title=[svc.description, svc.url].filter(Boolean).join('\n');
       a.innerHTML=`
         <div class="card-icon">${svc.icon||'⬡'}</div>
         <div class="card-name">${svc.name||''}</div>
@@ -552,7 +624,7 @@ function renderService(list,svc,gi,si){
   const mkInput=(field,placeholder,extraClass='')=>{
     const inp=document.createElement('input');
     inp.type='text'; inp.className='svc-input '+extraClass;
-    inp.value=esc(svc[field]||''); inp.placeholder=placeholder;
+    inp.value=svc[field]||''; inp.placeholder=placeholder; // a value, not HTML: no escaping
     inp.dataset.gi=gi; inp.dataset.si=si; inp.dataset.field=field;
     inp.addEventListener('input',e=>{ config.groups[gi].services[si][field]=e.target.value; });
     return inp;
@@ -596,10 +668,35 @@ function updateFooter(){
 
 function esc(str){ return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+// ── Retro theme: window buttons, taskbar and menu (.rb-only elements) ──────
+const appWindow=document.getElementById('app-window'), rbTask=document.getElementById('rb-task'), rbMax=document.getElementById('rb-max');
+function setMinimized(min){ appWindow.classList.toggle('minimized', min); rbTask.classList.toggle('active', !min); }
+document.getElementById('rb-min').addEventListener('click', ()=>setMinimized(true));
+rbTask.addEventListener('click', ()=>setMinimized(!appWindow.classList.contains('minimized')));
+function toggleMaximized(){ const restored=appWindow.classList.toggle('restored'); rbMax.setAttribute('aria-label', restored ? 'Maximize' : 'Restore'); }
+rbMax.addEventListener('click', toggleMaximized);
+document.querySelector('header').addEventListener('dblclick', ()=>{ if(currentTheme==='retro') toggleMaximized(); });
+
+const rbMenu=document.getElementById('rb-menu'), rbMenuBtn=document.getElementById('rb-menu-btn');
+function setRbMenu(open){ rbMenu.classList.toggle('open', open); rbMenuBtn.classList.toggle('active', open); }
+rbMenuBtn.addEventListener('click', e=>{ e.stopPropagation(); setRbMenu(!rbMenu.classList.contains('open')); });
+document.addEventListener('click', e=>{ if(!rbMenu.contains(e.target)) setRbMenu(false); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') setRbMenu(false); });
+rbMenu.querySelectorAll('.entry').forEach(entry=>{
+  const run=()=>{
+    setRbMenu(false);
+    if(entry.dataset.action==='theme'){ themeOverlay.classList.add('open'); return; }
+    setMinimized(false); openTab(entry.dataset.tab);
+  };
+  entry.addEventListener('click', e=>{ e.stopPropagation(); run(); });
+  entry.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); run(); } });
+});
+
 // ── Init ───────────────────────────────────────────────────────────────────
 async function init(){
   try{ monitorEnabled = (await (await fetch('/api/features')).json()).monitor; }catch{ monitorEnabled = false; }
   document.querySelector('.tab-btn[data-tab="monitor"]').style.display = monitorEnabled ? '' : 'none';
+  document.querySelector('#rb-menu [data-tab="monitor"]').style.display = monitorEnabled ? '' : 'none';
   await loadConfig();
   loadStatus();
   if(location.hash==='#monitor' && monitorEnabled) openTab('monitor');
