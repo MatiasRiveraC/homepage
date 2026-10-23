@@ -1,0 +1,20 @@
+# TrueNAS custom app for homepage (TrueNAS 24.10+ apps / Docker).
+# Copy to truenas-app.yaml (git-ignored), fill in the <placeholders>, then:
+#   Apps > Discover Apps > ⋮ > Install via YAML, name: homepage
+#
+# Custom apps run an existing image (no `build:`), so build it on TrueNAS first:
+#   cd <path to this folder> && docker build -t local/homepage:<n> .
+services:
+  homepage:
+    image: local/homepage:1
+    pull_policy: never          # the image is local; do not look for it on Docker Hub
+    ports:
+      - "3000:5000"
+    volumes:
+      # full path: a custom app does not run from this folder
+      - <path to this folder>/config.yaml:/config/config.yaml
+    environment:
+      - CONFIG_PATH=/config/config.yaml
+      # optional: shows a Monitor tab with this monitor's web page (see README)
+      # - MONITOR_URL=http://<monitor-host>:8088
+    restart: unless-stopped

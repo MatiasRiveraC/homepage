@@ -11,4 +11,5 @@ COPY favicon.svg ./static/favicon.svg
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "app:app"]
+# Threads: a monitor chat answer can stream for minutes; it must not block the rest of the page
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--worker-class", "gthread", "--threads", "8", "--timeout", "120", "app:app"]

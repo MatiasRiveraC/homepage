@@ -151,6 +151,20 @@
     .emoji-btn:hover{background:var(--surface2);border-color:var(--border)}
     .emoji-no-results{font-family:var(--mono);font-size:.65rem;color:var(--muted);padding:2rem;text-align:center;letter-spacing:.1em}
 
+    /* Monitor tab: the homelab monitor (monitor LXC) shown inside this page via /monitor/ */
+    #panel-monitor{padding:0}
+    #monitor-frame{flex:1;width:100%;min-height:calc(100vh - 160px);border:0;background:var(--bg)}
+
+    /* Live server status on the dashboard */
+    .status-strip{display:flex;align-items:center;gap:1rem;padding:.85rem 1.25rem;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;transition:border-color .15s}
+    .status-strip:hover{border-color:var(--accent)}
+    .status-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0}
+    .status-dot.ok{background:#22c55e}.status-dot.warning{background:#f59e0b}.status-dot.critical{background:var(--red)}
+    .status-text{color:var(--text);font-weight:700}
+    .status-sub{color:var(--dim)}
+    .status-counts{margin-left:auto;display:flex;gap:1rem;color:var(--dim)}
+    .status-counts b.crit{color:var(--red)}.status-counts b.warn{color:#f59e0b}
+
     /* Footer */
     footer{padding:1.25rem 3rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;display:flex;justify-content:space-between;flex-shrink:0}
 
@@ -206,10 +220,15 @@
 
 <nav>
   <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+  <button class="tab-btn" data-tab="monitor">Monitor</button>
   <button class="tab-btn" data-tab="editor">Edit services</button>
 </nav>
 
 <div class="tab-panel active" id="panel-dashboard"></div>
+
+<div class="tab-panel" id="panel-monitor">
+  <iframe id="monitor-frame" title="Homelab monitor"></iframe>
+</div>
 
 <div class="tab-panel" id="panel-editor">
   <div class="editor-header">
@@ -258,6 +277,19 @@ function applyTheme(id) {
   document.documentElement.dataset.theme = id === 'default' ? '' : id;
   localStorage.setItem(THEME_KEY, id);
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === id));
+  syncMonitorTheme();
+}
+
+// The monitor page (same origin through /monitor/) takes this page's theme colours
+const MONITOR_THEME_VARS = {'--bg':'--bg','--panel':'--surface','--panel-2':'--surface2','--border':'--border',
+  '--text':'--text','--muted':'--dim','--accent':'--accent','--on-accent':'--bg','--crit':'--red'};
+function syncMonitorTheme(){
+  const frame = document.getElementById('monitor-frame');
+  const doc = frame && frame.contentDocument;
+  if (!doc || !doc.documentElement) return;
+  const cs = getComputedStyle(document.documentElement);
+  for (const [monitorVar, ownVar] of Object.entries(MONITOR_THEME_VARS))
+    doc.documentElement.style.setProperty(monitorVar, cs.getPropertyValue(ownVar).trim());
 }
 
 function buildThemeGrid() {
@@ -370,15 +402,47 @@ function updateClock(){
 updateClock(); setInterval(updateClock,1000);
 
 // ── Tabs ───────────────────────────────────────────────────────────────────
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
-    if(btn.dataset.tab==='editor') renderEditor();
-  });
-});
+function openTab(tab, monitorView){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  history.replaceState(null, '', tab==='dashboard' ? location.pathname : '#'+tab);
+  if(tab==='editor') renderEditor();
+  if(tab==='dashboard') loadStatus();
+  if(tab==='monitor'){
+    const frame=document.getElementById('monitor-frame');
+    if(!frame.getAttribute('src')) frame.src='/monitor/?embed=1#'+(monitorView||'overview');
+    else if(monitorView) frame.contentWindow.location.hash=monitorView;
+  }
+}
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>openTab(btn.dataset.tab)));
+document.getElementById('monitor-frame').addEventListener('load', syncMonitorTheme);
+
+// ── Server status (from the homelab monitor) ──────────────────────────────
+let serverStatus = null;
+async function loadStatus(){
+  if(!monitorEnabled) return;
+  try{
+    const res = await fetch('/monitor/api/overview', {credentials:'same-origin'});
+    if(res.status===401) serverStatus = {login:true};
+    else if(!res.ok) serverStatus = {down:true};
+    else serverStatus = await res.json();
+  }catch{ serverStatus = {down:true}; }
+  renderStatus();
+}
+function renderStatus(){
+  const strip = document.getElementById('status-strip');
+  if(!strip || !serverStatus) return;
+  const s = serverStatus;
+  if(s.login){ strip.innerHTML='<span class="status-dot"></span><span class="status-text">Server status</span><span class="status-sub">Sign in to the monitor to see it</span>'; return; }
+  if(s.down){ strip.innerHTML='<span class="status-dot critical"></span><span class="status-text">Monitor unreachable</span><span class="status-sub">The homelab monitor (LXC 105) does not answer</span>'; return; }
+  const cls = s.verdict==='All good' ? 'ok' : s.verdict==='Needs attention' ? 'warning' : 'critical';
+  const healthy = (s.collectors||[]).filter(c=>c.last_ok).length;
+  strip.innerHTML=`<span class="status-dot ${cls}"></span><span class="status-text">${esc(s.verdict)}</span>
+    <span class="status-counts"><span><b class="crit">${s.counts.critical}</b> critical</span><span><b class="warn">${s.counts.warning}</b> warnings</span>
+    <span>${healthy}/${(s.collectors||[]).length} collectors</span></span>`;
+}
+setInterval(loadStatus, 60000);
 
 // ── Load config ────────────────────────────────────────────────────────────
 async function loadConfig(){
@@ -393,9 +457,19 @@ async function loadConfig(){
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
+let monitorEnabled = false; // set from /api/features (MONITOR_URL configured)
+
 function renderDashboard(){
   const panel=document.getElementById('panel-dashboard');
   panel.innerHTML='';
+  if(monitorEnabled){
+    const strip=document.createElement('div');
+    strip.className='status-strip'; strip.id='status-strip'; strip.title='Open the monitor';
+    strip.innerHTML='<span class="status-dot"></span><span class="status-sub">Checking the server…</span>';
+    strip.addEventListener('click',()=>openTab('monitor','overview'));
+    panel.appendChild(strip);
+    renderStatus();
+  }
   (config.groups||[]).forEach((group,gi)=>{
     const section=document.createElement('section');
     section.className='group';
@@ -523,10 +597,18 @@ function updateFooter(){
 function esc(str){ return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── Init ───────────────────────────────────────────────────────────────────
+async function init(){
+  try{ monitorEnabled = (await (await fetch('/api/features')).json()).monitor; }catch{ monitorEnabled = false; }
+  document.querySelector('.tab-btn[data-tab="monitor"]').style.display = monitorEnabled ? '' : 'none';
+  await loadConfig();
+  loadStatus();
+  if(location.hash==='#monitor' && monitorEnabled) openTab('monitor');
+  else if(location.hash==='#editor') openTab('editor');
+}
 buildThemeGrid();
 buildEmojiPicker();
 applyTheme(currentTheme);
-loadConfig();
+init();
 </script>
 </body>
 </html>

@@ -1,5 +1,9 @@
 # Personal config (hosts, IPs, names). Use config.example.yaml as the template.
 config.yaml
+# Personal deployment files (IPs, paths). Use truenas-app.example.yaml as the template.
+truenas-app.yaml
+MIGRATE-TO-TRUENAS-APP.md
+UPDATE-TO-V2.md
 
 # Secrets
 .env
