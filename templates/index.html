@@ -32,8 +32,11 @@
     /* Retro: classic beveled desktop. Most of it is in static/retro-ui.css + static/retro-theme.css,
        loaded only while this theme is on (html.rb); these variables also colour the Monitor tab. */
     [data-theme="retro"]{--bg:#008080;--surface:#c0c0c0;--surface2:#dfdfdf;--border:#808080;--accent:#000080;--muted:#808080;--text:#000000;--dim:#404040;--red:#c00000;--on-accent:#ffffff;--frame-bg:#c0c0c0}
+    /* Rust gloss: dark glossy windows. The look is in static/rust-theme.css, loaded only while this
+       theme is on (html.rg); these variables also colour the Monitor tab, which adds its own window look. */
+    [data-theme="rust"]{--bg:#121417;--surface:#343a42;--surface2:#2a2f35;--border:#56606b;--accent:#f97316;--muted:#8a939d;--text:#e6e9ed;--dim:#aab3bd;--red:#f87171;--on-accent:#1c0a02;--frame-bg:#121417}
     html:not(.rb) .rb-only{display:none!important}
-    .app-window{display:contents} /* a real window only in the Retro theme */
+    .app-window{display:contents} /* a real window only in the Retro and Rust gloss themes */
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;transition:background .25s,color .25s}
@@ -185,14 +188,19 @@
   </style>
   <link rel="stylesheet" id="rb-css" href="/static/retro-ui.css" media="not all">
   <link rel="stylesheet" id="rb-theme-css" href="/static/retro-theme.css" media="not all">
+  <link rel="stylesheet" id="rg-css" href="/static/rust-theme.css" media="not all">
   <script>
-    // Apply the saved theme before the first paint (Retro also switches on its stylesheets)
+    // Apply the saved theme before the first paint (Retro and Rust gloss also switch on their stylesheets)
     (function(){
       var t; try { t = localStorage.getItem('hl-theme'); } catch(e) {}
       if (t && t !== 'default') document.documentElement.dataset.theme = t;
       if (t === 'retro') {
         document.documentElement.classList.add('rb');
         document.getElementById('rb-css').media = document.getElementById('rb-theme-css').media = 'all';
+      }
+      if (t === 'rust') {
+        document.documentElement.classList.add('rg');
+        document.getElementById('rg-css').media = 'all';
       }
     })();
   </script>
@@ -334,6 +342,7 @@ const THEMES = [
   {id:'slate',      name:'Slate',      bg:'#0f172a',surface:'#1e293b',accent:'#f472b6'},
   {id:'light',      name:'Light',      bg:'#f5f5f0',surface:'#ffffff',accent:'#1a1a1a'},
   {id:'retro',      name:'Retro',      bg:'#008080',surface:'#c0c0c0',accent:'#000080'},
+  {id:'rust',       name:'Rust gloss', bg:'#121417',surface:'#343a42',accent:'#f97316'},
 ];
 const THEME_KEY = 'hl-theme';
 let currentTheme = localStorage.getItem(THEME_KEY) || 'default';
@@ -344,6 +353,9 @@ function applyTheme(id) {
   const retro = id === 'retro';
   document.documentElement.classList.toggle('rb', retro);
   ['rb-css','rb-theme-css'].forEach(l => document.getElementById(l).media = retro ? 'all' : 'not all');
+  const rust = id === 'rust';
+  document.documentElement.classList.toggle('rg', rust);
+  document.getElementById('rg-css').media = rust ? 'all' : 'not all';
   localStorage.setItem(THEME_KEY, id);
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === id));
   syncMonitorTheme();
@@ -360,6 +372,7 @@ function syncMonitorTheme(){
   for (const [monitorVar, ownVar] of Object.entries(MONITOR_THEME_VARS))
     doc.documentElement.style.setProperty(monitorVar, cs.getPropertyValue(ownVar).trim());
   doc.documentElement.classList.toggle('theme-retro', currentTheme === 'retro'); // its bevelled look
+  doc.documentElement.classList.toggle('theme-rust', currentTheme === 'rust');   // its dark glossy windows
 }
 
 function buildThemeGrid() {

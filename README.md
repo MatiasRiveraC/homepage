@@ -7,8 +7,9 @@ A lightweight, self-hosted start page for your home server. It shows all your se
 - **Dashboard**: services organized into named groups, each with an emoji icon, a name, a description, and a link.
 - **In-browser editor**: add, remove, and reorder groups and services from the UI. Changes are saved straight to `config.yaml`.
 - **Emoji picker**: a searchable picker for service icons.
-- **17 themes**: Default, Terminal, Nord, Dracula, Solarized, Monokai, Tokyo, Rosé, Gruvbox, Catppuccin, Midnight, Forest, Amber, Ocean, Slate, Light, and Retro. Your choice is remembered per browser.
+- **18 themes**: Default, Terminal, Nord, Dracula, Solarized, Monokai, Tokyo, Rosé, Gruvbox, Catppuccin, Midnight, Forest, Amber, Ocean, Slate, Light, Retro, and Rust gloss. Your choice is remembered per browser.
   Retro is a classic beveled desktop: the page becomes a window on a teal desktop, with a taskbar, a menu and working minimize/restore buttons.
+  Rust gloss is a dark glossy window: charcoal title bar with an orange underline, slate controls, orange only for what matters. The Monitor tab follows it.
 - **Live clock & greeting**: a customizable title, greeting, and subtitle.
 - **Optional Monitor tab**: shows a homelab monitor's web page inside homepage, in the same theme, with a live server-status strip on the dashboard (see [Monitor tab](#monitor-tab-optional)).
 - **Tiny footprint**: Flask + Gunicorn and a single HTML template.
@@ -118,6 +119,7 @@ templates/index.html The whole frontend (dashboard, editor, themes)
 favicon.svg          Site icon
 static/retro-ui.css  Beveled desktop components (loaded only for the Retro theme)
 static/retro-theme.css  How the homepage uses them in the Retro theme
+static/rust-theme.css  The Rust gloss theme (loaded only while it is selected)
 config.example.yaml  Example config (copy to config.yaml)
 Dockerfile           Container image (Gunicorn with threads)
 docker-compose.yml   Deployment with config.yaml bind-mounted
