@@ -80,6 +80,12 @@
 .rb .status-counts b.crit { color: #c00000; }
 .rb .status-counts b.warn { color: #806000; }
 
+/* Home Assistant states: a small line under each icon */
+.rb .ha-state { font: 11px var(--rb-font); color: #000; }
+.rb .ha-card.ha-on .ha-state { color: var(--rb-navy); font-weight: 700; }
+.rb .ha-card.ha-off .ha-state { color: var(--rb-shadow); font-weight: 400; }
+.rb .ha-msg { background: #fff; border: 0; padding: 3px 6px; font: 11px var(--rb-font); letter-spacing: 0; text-transform: none; color: #000; }
+
 /* ── Monitor tab: the monitor page in a sunken pane (it styles itself, see syncMonitorTheme) ── */
 .rb #panel-monitor { padding: 2px; background: #fff; box-shadow: var(--rb-field); }
 .rb #monitor-frame { min-height: calc(100vh - 92px); background: var(--rb-face); }

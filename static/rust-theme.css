@@ -111,6 +111,12 @@
 .rg .status-counts b.crit { color: #fca5a5; }
 .rg .status-counts b.warn { color: #fcd34d; }
 
+/* Home Assistant states: a small line under each icon */
+.rg .ha-state { font: 11px var(--rg-font); color: var(--rg-dim); }
+.rg .ha-card.ha-on .ha-state { color: var(--rg-orange-text); }
+.rg .ha-card.ha-off .ha-state { color: var(--rg-dim); opacity: .6; }
+.rg .ha-msg { background: var(--rg-face); border: 1px solid var(--rg-field-border); padding: 4px 8px; font: 11px var(--rg-font); letter-spacing: 0; text-transform: none; color: var(--rg-dim); }
+
 /* ── Monitor tab: the monitor page fills the panel (it styles itself, see syncMonitorTheme) ── */
 .rg #panel-monitor { padding: 0; }
 .rg #monitor-frame { min-height: calc(100vh - 116px); background: #121417; }

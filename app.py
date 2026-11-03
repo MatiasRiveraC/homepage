@@ -1,4 +1,6 @@
+import json
 import os
+import re
 import urllib.error
 import urllib.request
 import yaml
@@ -16,6 +18,15 @@ MONITOR_URL = os.environ.get("MONITOR_URL", "").rstrip("/")
 MONITOR_TIMEOUT = float(os.environ.get("MONITOR_TIMEOUT", 1800))  # chat answers can take minutes
 FORWARD_REQUEST_HEADERS = ("Content-Type", "Cookie", "Accept")
 FORWARD_RESPONSE_HEADERS = ("Set-Cookie", "Cache-Control")
+
+# Optional: read-only Home Assistant states on the dashboard (the entities listed under
+# `homeassistant:` in config.yaml). The token stays on the server; the browser only gets each
+# listed entity's state, name and unit, never the token or the other attributes.
+# Unset = no Home Assistant section.
+HA_URL = os.environ.get("HA_URL", "").rstrip("/")
+HA_TOKEN = os.environ.get("HA_TOKEN", "")
+HA_TIMEOUT = float(os.environ.get("HA_TIMEOUT", 10))
+ENTITY_ID = re.compile(r"^[a-z_]+\.[a-z0-9_]+$")
 
 
 def read_config():
@@ -56,7 +67,74 @@ def update_config():
 
 @app.route("/api/features")
 def features():
-    return jsonify({"monitor": bool(MONITOR_URL)})
+    return jsonify({"monitor": bool(MONITOR_URL), "homeassistant": bool(HA_URL and HA_TOKEN)})
+
+
+def ha_wanted(cfg):
+    """The entities listed in config.yaml: [{"entity", "name", "icon"}], invalid ids dropped."""
+    wanted = []
+    for item in ((cfg.get("homeassistant") or {}).get("entities") or []):
+        item = {"entity": item} if isinstance(item, str) else item
+        if isinstance(item, dict) and ENTITY_ID.match(str(item.get("entity", ""))):
+            wanted.append({"entity": item["entity"], "name": item.get("name") or "", "icon": item.get("icon") or ""})
+    return wanted
+
+
+def ha_states():
+    """All states from Home Assistant, by entity id. Raises OSError/ValueError when it fails."""
+    req = urllib.request.Request(f"{HA_URL}/api/states",
+                                 headers={"Authorization": f"Bearer {HA_TOKEN}", "Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=HA_TIMEOUT) as r:
+        return {s["entity_id"]: s for s in json.load(r)}
+
+
+def ha_error(e):
+    if isinstance(e, urllib.error.HTTPError):
+        why = "the token was rejected" if e.code in (401, 403) else f"it answered {e.code}"
+    else:
+        why = "it is not reachable"
+    return jsonify({"error": f"Home Assistant: {why}"}), 502
+
+
+@app.route("/api/ha")
+def ha():
+    if not (HA_URL and HA_TOKEN):
+        return jsonify({"error": "No Home Assistant configured (HA_URL / HA_TOKEN are not set)"}), 404
+    with _lock:
+        wanted = ha_wanted(read_config())
+    if not wanted:
+        return jsonify({"entities": []})
+    try:
+        states = ha_states()
+    except (OSError, ValueError) as e:
+        return ha_error(e)
+    out = []
+    for w in wanted:
+        s = states.get(w["entity"])
+        attrs = (s or {}).get("attributes") or {}
+        out.append({
+            "entity": w["entity"], "icon": w["icon"],
+            "name": w["name"] or attrs.get("friendly_name") or w["entity"],
+            "state": s["state"] if s else None,  # None = no such entity in Home Assistant
+            "unit": attrs.get("unit_of_measurement"),
+            "device_class": attrs.get("device_class"),
+            "last_changed": (s or {}).get("last_changed"),
+        })
+    return jsonify({"entities": out})
+
+
+@app.route("/api/ha/entities")
+def ha_entities():
+    """Entity ids and names, for picking them in the editor."""
+    if not (HA_URL and HA_TOKEN):
+        return jsonify({"error": "No Home Assistant configured (HA_URL / HA_TOKEN are not set)"}), 404
+    try:
+        states = ha_states()
+    except (OSError, ValueError) as e:
+        return ha_error(e)
+    return jsonify({"entities": sorted(
+        ({"entity": i, "name": (s.get("attributes") or {}).get("friendly_name") or ""} for i, s in states.items()),
+        key=lambda e: e["entity"])})
 
 
 @app.route("/monitor")

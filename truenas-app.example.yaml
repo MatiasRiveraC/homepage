@@ -17,4 +17,8 @@ services:
       - CONFIG_PATH=/config/config.yaml
       # optional: shows a Monitor tab with this monitor's web page (see README)
       # - MONITOR_URL=http://<monitor-host>:8088
+      # optional: read-only Home Assistant states on the dashboard (see README).
+      # Put the real token only in truenas-app.yaml / the app's settings, never in git.
+      # - HA_URL=http://<ha-host>:8123
+      # - HA_TOKEN=<long-lived access token of a non-admin Home Assistant user>
     restart: unless-stopped

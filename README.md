@@ -83,6 +83,36 @@ site:
 | `CONFIG_PATH`        | `/config/config.yaml` | Path to the YAML config file    |
 | `MONITOR_URL`        | *(unset)*             | Base URL of a homelab monitor web page; enables the Monitor tab |
 | `MONITOR_TIMEOUT`    | `1800`                | Seconds to wait on the monitor (chat answers can be slow) |
+| `HA_URL`             | *(unset)*             | Home Assistant address (e.g. `http://<ha-host>:8123`); with `HA_TOKEN`, enables the Home section |
+| `HA_TOKEN`           | *(unset)*             | A Home Assistant long-lived access token (keep it out of `config.yaml` and git) |
+| `HA_TIMEOUT`         | `10`                  | Seconds to wait on Home Assistant |
+
+### Home Assistant section (optional)
+
+With `HA_URL` and `HA_TOKEN` set, the dashboard shows the current state of the Home
+Assistant entities you list (lights, doors, temperatures, …), refreshed every 30 seconds.
+It is **read-only**: there are no buttons, and homepage only ever calls Home Assistant's
+`GET /api/states`. The token stays on the server; the browser gets only each listed
+entity's state, name, unit and last change, never the token or the other attributes.
+
+Pick the entities in the editor (the entity id field suggests the ones Home Assistant has),
+or in `config.yaml`:
+
+```yaml
+homeassistant:
+  title: Home                       # section heading (default "Home")
+  link: http://192.168.0.30:8123/   # optional: cards open this when clicked
+  entities:
+  - entity: cover.garage_door
+    name: Garage                    # optional, default: the name in Home Assistant
+    icon: 🚗                         # optional, default: by entity type
+  - sensor.living_room_temperature  # a plain id works too
+```
+
+Use a dedicated Home Assistant user for the token (not an administrator, "local access
+only"), so the token cannot change Home Assistant's settings and stops working from
+outside your network. Home Assistant tokens cannot be limited to reading, so keep it
+secret like a password.
 
 ### Monitor tab (optional)
 
@@ -108,7 +138,9 @@ Edit. Note that `config.yaml` is mounted as a single file: if you replace it fro
 |--------|---------------|-------------------------------------------|
 | GET    | `/api/config` | Returns the current config as JSON        |
 | POST   | `/api/config` | Replaces the config with the posted JSON  |
-| GET    | `/api/features` | `{"monitor": true}` when `MONITOR_URL` is set |
+| GET    | `/api/features` | `{"monitor": true, "homeassistant": true}` for what is configured |
+| GET    | `/api/ha`     | State of the Home Assistant entities listed in the config |
+| GET    | `/api/ha/entities` | Ids and names of all Home Assistant entities (for the editor) |
 | GET/POST | `/monitor/…` | Passed through to `MONITOR_URL` |
 
 ## Project structure
@@ -132,3 +164,6 @@ truenas-app.example.yaml  TrueNAS custom app (copy to truenas-app.yaml)
 - Keep `config.yaml` out of version control. Use `config.example.yaml` as the template.
 - The Monitor tab is protected by the monitor's own login, not by homepage. Homepage only
   forwards requests to the one `MONITOR_URL` you configure.
+- The Home Assistant section has no login of its own: anyone who can open homepage sees
+  the listed entities' states and the entity list (`/api/ha/entities`), but not the token
+  and cannot control anything. Don't publish homepage on the internet with it on.
