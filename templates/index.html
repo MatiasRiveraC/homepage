@@ -14,27 +14,15 @@
       --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
       --on-accent:var(--bg);--frame-bg:var(--bg); /* passed to the Monitor tab; a theme may override them */
     }
-    [data-theme="terminal"]{--bg:#0d1117;--surface:#161b22;--surface2:#1c2128;--border:#30363d;--accent:#39d353;--muted:#484f58;--text:#c9d1d9;--dim:#8b949e}
-    [data-theme="nord"]{--bg:#2e3440;--surface:#3b4252;--surface2:#434c5e;--border:#4c566a;--accent:#88c0d0;--muted:#616e88;--text:#eceff4;--dim:#d8dee9}
-    [data-theme="dracula"]{--bg:#282a36;--surface:#313341;--surface2:#3a3d4d;--border:#44475a;--accent:#bd93f9;--muted:#565869;--text:#f8f8f2;--dim:#a0a0b0}
-    [data-theme="solarized"]{--bg:#002b36;--surface:#073642;--surface2:#0a4452;--border:#1a5464;--accent:#2aa198;--muted:#586e75;--text:#839496;--dim:#657b83}
-    [data-theme="monokai"]{--bg:#1e1f1c;--surface:#272822;--surface2:#2f3025;--border:#3e3d32;--accent:#a6e22e;--muted:#565656;--text:#f8f8f2;--dim:#908080}
-    [data-theme="tokyo"]{--bg:#1a1b26;--surface:#24283b;--surface2:#292e42;--border:#3b3f5c;--accent:#7aa2f7;--muted:#565f89;--text:#c0caf5;--dim:#9aa5ce}
-    [data-theme="rose"]{--bg:#191724;--surface:#1f1d2e;--surface2:#26233a;--border:#393552;--accent:#eb6f92;--muted:#524f67;--text:#e0def4;--dim:#908caa}
-    [data-theme="gruvbox"]{--bg:#1d2021;--surface:#282828;--surface2:#32302f;--border:#504945;--accent:#fabd2f;--muted:#665c54;--text:#ebdbb2;--dim:#a89984}
-    [data-theme="catppuccin"]{--bg:#1e1e2e;--surface:#313244;--surface2:#45475a;--border:#585b70;--accent:#cba6f7;--muted:#6c7086;--text:#cdd6f4;--dim:#a6adc8}
-    [data-theme="midnight"]{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2336;--border:#1e3a5f;--accent:#38bdf8;--muted:#334155;--text:#e2e8f0;--dim:#94a3b8}
-    [data-theme="forest"]{--bg:#0f1a0f;--surface:#162016;--surface2:#1c291c;--border:#2a3e2a;--accent:#86efac;--muted:#3d5c3d;--text:#d1fae5;--dim:#6ee7b7}
-    [data-theme="amber"]{--bg:#0f0a00;--surface:#1a1200;--surface2:#261b00;--border:#3d2e00;--accent:#fbbf24;--muted:#5c4700;--text:#fef3c7;--dim:#d97706}
-    [data-theme="ocean"]{--bg:#0c1821;--surface:#162433;--surface2:#1e3045;--border:#2a4a66;--accent:#06b6d4;--muted:#2d4f6a;--text:#cae0f0;--dim:#7ab8d4}
-    [data-theme="slate"]{--bg:#0f172a;--surface:#1e293b;--surface2:#293548;--border:#334155;--accent:#f472b6;--muted:#475569;--text:#f1f5f9;--dim:#94a3b8}
-    [data-theme="light"]{--bg:#f5f5f0;--surface:#ffffff;--surface2:#e8e8e2;--border:#d0d0c8;--accent:#1a1a1a;--muted:#aaaaa0;--text:#1a1a1a;--dim:#666660;--red:#dc2626}
     /* Retro: classic beveled desktop. Most of it is in static/retro-ui.css + static/retro-theme.css,
        loaded only while this theme is on (html.rb); these variables also colour the Monitor tab. */
     [data-theme="retro"]{--bg:#008080;--surface:#c0c0c0;--surface2:#dfdfdf;--border:#808080;--accent:#000080;--muted:#808080;--text:#000000;--dim:#404040;--red:#c00000;--on-accent:#ffffff;--frame-bg:#c0c0c0}
     /* Rust gloss: dark glossy windows. The look is in static/rust-theme.css, loaded only while this
        theme is on (html.rg); these variables also colour the Monitor tab, which adds its own window look. */
     [data-theme="rust"]{--bg:#121417;--surface:#343a42;--surface2:#2a2f35;--border:#56606b;--accent:#f97316;--muted:#8a939d;--text:#e6e9ed;--dim:#aab3bd;--red:#f87171;--on-accent:#1c0a02;--frame-bg:#121417}
+    /* Eva MAGI: NERV control-room look. The look is in static/magi-theme.css, loaded only while this
+       theme is on (html.mg); these variables also colour the Monitor tab. Text is never the dim tint. */
+    [data-theme="magi"]{--bg:#000000;--surface:#000000;--surface2:#0a0a0a;--border:#3a1700;--accent:#ff6600;--muted:#ff8800;--text:#ff6600;--dim:#ff8800;--red:#ff0000;--on-accent:#000000;--frame-bg:#000000}
     html:not(.rb) .rb-only{display:none!important}
     .app-window{display:contents} /* a real window only in the Retro and Rust gloss themes */
 
@@ -77,7 +65,7 @@
     .swatch-name{font-family:var(--mono);font-size:.58rem;letter-spacing:.05em;color:var(--text);text-transform:uppercase;line-height:1.3}
 
     /* Tabs */
-    nav{display:flex;border-bottom:1px solid var(--border);padding:0 3rem;flex-shrink:0}
+    nav{display:flex;border-bottom:1px solid var(--border);padding:0 3rem;flex-shrink:0;overflow-x:auto;scrollbar-width:none}
     .tab-btn{font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;padding:.75rem 1.25rem .75rem 0;margin-right:1.5rem;cursor:pointer;transition:color .15s,border-color .15s}
     .tab-btn:hover{color:var(--text)}
     .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -198,11 +186,14 @@
   <link rel="stylesheet" id="rb-css" href="/static/retro-ui.css" media="not all">
   <link rel="stylesheet" id="rb-theme-css" href="/static/retro-theme.css" media="not all">
   <link rel="stylesheet" id="rg-css" href="/static/rust-theme.css" media="not all">
+  <link rel="stylesheet" id="mg-css" href="/static/magi-theme.css" media="not all">
   <script>
-    // Apply the saved theme before the first paint (Retro and Rust gloss also switch on their stylesheets)
+    // Apply the saved theme before the first paint (each theme switches on its own stylesheet).
+    // Only Eva MAGI, Retro and Rust gloss remain; anything else saved (or nothing) means Eva MAGI.
     (function(){
       var t; try { t = localStorage.getItem('hl-theme'); } catch(e) {}
-      if (t && t !== 'default') document.documentElement.dataset.theme = t;
+      if (t !== 'retro' && t !== 'rust') t = 'magi';
+      document.documentElement.dataset.theme = t;
       if (t === 'retro') {
         document.documentElement.classList.add('rb');
         document.getElementById('rb-css').media = document.getElementById('rb-theme-css').media = 'all';
@@ -210,6 +201,10 @@
       if (t === 'rust') {
         document.documentElement.classList.add('rg');
         document.getElementById('rg-css').media = 'all';
+      }
+      if (t === 'magi') {
+        document.documentElement.classList.add('mg');
+        document.getElementById('mg-css').media = 'all';
       }
     })();
   </script>
@@ -251,6 +246,7 @@
   </div>
   <div class="header-right">
     <div><div id="clock">--:--:--</div><div id="date"></div></div>
+    <button class="palette-btn" id="edit-btn" title="Edit the services and Home Assistant cards">Edit</button>
     <button class="palette-btn" id="palette-btn"><span class="palette-dot"></span>Theme</button>
     <div class="rb-only title-bar-controls">
       <button aria-label="Minimize" id="rb-min" title="Minimize"></button>
@@ -284,9 +280,14 @@
 </div>
 
 <nav>
-  <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-  <button class="tab-btn" data-tab="monitor">Monitor</button>
-  <button class="tab-btn" data-tab="editor">Edit services</button>
+  <button class="tab-btn active" data-tab="dashboard">Services</button>
+  <!-- the monitor's own pages, shown in the Monitor panel (its own menu is hidden there) -->
+  <button class="tab-btn mon-tab" data-tab="monitor" data-view="overview">Overview</button>
+  <button class="tab-btn mon-tab" data-tab="monitor" data-view="issues">Issues</button>
+  <button class="tab-btn mon-tab" data-tab="monitor" data-view="machines">Machines</button>
+  <button class="tab-btn mon-tab" data-tab="monitor" data-view="logs">Logs</button>
+  <button class="tab-btn mon-tab" data-tab="monitor" data-view="chat">Chat</button>
+  <button class="tab-btn mon-tab" data-tab="monitor" data-view="settings">Settings</button>
 </nav>
 
 <div class="tab-panel active" id="panel-dashboard"></div>
@@ -297,9 +298,10 @@
 
 <div class="tab-panel" id="panel-editor">
   <div class="editor-header">
-    <span class="editor-title">Services config</span>
+    <span class="editor-title">Edit services</span>
     <div class="editor-actions">
       <span id="save-status"></span>
+      <button class="btn btn-ghost" id="btn-editor-done" title="Back to the services">Done</button>
       <button class="btn btn-accent" id="btn-save">Save changes</button>
     </div>
   </div>
@@ -325,7 +327,7 @@
 <div class="rb-only menu-panel" id="rb-menu" role="menu">
   <div class="banner"><b>Home<i>lab</i></b></div>
   <div class="items">
-    <div class="entry" role="menuitem" tabindex="0" data-tab="dashboard"><svg class="glyph"><use href="#i-folder"/></svg><span><u>D</u>ashboard</span></div>
+    <div class="entry" role="menuitem" tabindex="0" data-tab="dashboard"><svg class="glyph"><use href="#i-folder"/></svg><span><u>S</u>ervices</span></div>
     <div class="entry" role="menuitem" tabindex="0" data-tab="monitor"><svg class="glyph"><use href="#i-computer"/></svg><span><u>M</u>onitor</span></div>
     <div class="entry" role="menuitem" tabindex="0" data-tab="editor"><svg class="glyph"><use href="#i-doc"/></svg><span><u>E</u>dit services</span></div>
     <div class="sep"></div>
@@ -336,37 +338,27 @@
 <script>
 // ── Themes ─────────────────────────────────────────────────────────────────
 const THEMES = [
-  {id:'default',    name:'Hacker',     bg:'#0e0f11',surface:'#161719',accent:'#e8ff5a'},
-  {id:'terminal',   name:'Terminal',   bg:'#0d1117',surface:'#161b22',accent:'#39d353'},
-  {id:'nord',       name:'Nord',       bg:'#2e3440',surface:'#3b4252',accent:'#88c0d0'},
-  {id:'dracula',    name:'Dracula',    bg:'#282a36',surface:'#313341',accent:'#bd93f9'},
-  {id:'solarized',  name:'Solarized',  bg:'#002b36',surface:'#073642',accent:'#2aa198'},
-  {id:'monokai',    name:'Monokai',    bg:'#1e1f1c',surface:'#272822',accent:'#a6e22e'},
-  {id:'tokyo',      name:'Tokyo',      bg:'#1a1b26',surface:'#24283b',accent:'#7aa2f7'},
-  {id:'rose',       name:'Rosé Pine',  bg:'#191724',surface:'#1f1d2e',accent:'#eb6f92'},
-  {id:'gruvbox',    name:'Gruvbox',    bg:'#1d2021',surface:'#282828',accent:'#fabd2f'},
-  {id:'catppuccin', name:'Catppuccin', bg:'#1e1e2e',surface:'#313244',accent:'#cba6f7'},
-  {id:'midnight',   name:'Midnight',   bg:'#0a0e1a',surface:'#111827',accent:'#38bdf8'},
-  {id:'forest',     name:'Forest',     bg:'#0f1a0f',surface:'#162016',accent:'#86efac'},
-  {id:'amber',      name:'Amber',      bg:'#0f0a00',surface:'#1a1200',accent:'#fbbf24'},
-  {id:'ocean',      name:'Ocean',      bg:'#0c1821',surface:'#162433',accent:'#06b6d4'},
-  {id:'slate',      name:'Slate',      bg:'#0f172a',surface:'#1e293b',accent:'#f472b6'},
-  {id:'light',      name:'Light',      bg:'#f5f5f0',surface:'#ffffff',accent:'#1a1a1a'},
+  {id:'magi',       name:'Eva MAGI',   bg:'#000000',surface:'#ff6600',accent:'#ffcc00'},
   {id:'retro',      name:'Retro',      bg:'#008080',surface:'#c0c0c0',accent:'#000080'},
   {id:'rust',       name:'Rust gloss', bg:'#121417',surface:'#343a42',accent:'#f97316'},
 ];
 const THEME_KEY = 'hl-theme';
-let currentTheme = localStorage.getItem(THEME_KEY) || 'default';
+const DEFAULT_THEME = 'magi'; // also for browsers that saved one of the removed themes
+let currentTheme = localStorage.getItem(THEME_KEY);
+if (!THEMES.some(t => t.id === currentTheme)) currentTheme = DEFAULT_THEME;
 
 function applyTheme(id) {
   currentTheme = id;
-  document.documentElement.dataset.theme = id === 'default' ? '' : id;
+  document.documentElement.dataset.theme = id;
   const retro = id === 'retro';
   document.documentElement.classList.toggle('rb', retro);
   ['rb-css','rb-theme-css'].forEach(l => document.getElementById(l).media = retro ? 'all' : 'not all');
   const rust = id === 'rust';
   document.documentElement.classList.toggle('rg', rust);
   document.getElementById('rg-css').media = rust ? 'all' : 'not all';
+  const magi = id === 'magi';
+  document.documentElement.classList.toggle('mg', magi);
+  document.getElementById('mg-css').media = magi ? 'all' : 'not all';
   localStorage.setItem(THEME_KEY, id);
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === id));
   syncMonitorTheme();
@@ -384,6 +376,7 @@ function syncMonitorTheme(){
     doc.documentElement.style.setProperty(monitorVar, cs.getPropertyValue(ownVar).trim());
   doc.documentElement.classList.toggle('theme-retro', currentTheme === 'retro'); // its bevelled look
   doc.documentElement.classList.toggle('theme-rust', currentTheme === 'rust');   // its dark glossy windows
+  doc.documentElement.classList.toggle('theme-magi', currentTheme === 'magi');   // its MAGI control room, with the MAGI deck on its Overview
 }
 
 function buildThemeGrid() {
@@ -500,8 +493,16 @@ function updateClock(){
 updateClock(); setInterval(updateClock,1000);
 
 // ── Tabs ───────────────────────────────────────────────────────────────────
+// which monitor page is showing (its hash), so the right tab is lit
+function monitorViewNow(){
+  try{ return (document.getElementById('monitor-frame').contentWindow.location.hash||'').slice(1) || 'overview'; }catch{ return 'overview'; }
+}
+function markTabs(tab, view){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',
+    b.dataset.tab===tab && (tab!=='monitor' || b.dataset.view===view)));
+}
 function openTab(tab, monitorView){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  markTabs(tab, monitorView || (tab==='monitor' ? monitorViewNow() : null));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+tab).classList.add('active');
   history.replaceState(null, '', tab==='dashboard' ? location.pathname : '#'+tab);
@@ -511,10 +512,19 @@ function openTab(tab, monitorView){
     const frame=document.getElementById('monitor-frame');
     if(!frame.getAttribute('src')) frame.src='/monitor/?embed=1#'+(monitorView||'overview');
     else if(monitorView) frame.contentWindow.location.hash=monitorView;
+    history.replaceState(null, '', '#'+(monitorView||monitorViewNow()));
   }
 }
-document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>openTab(btn.dataset.tab)));
-document.getElementById('monitor-frame').addEventListener('load', syncMonitorTheme);
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>openTab(btn.dataset.tab, btn.dataset.view)));
+document.getElementById('edit-btn').addEventListener('click',()=>openTab('editor'));
+document.getElementById('btn-editor-done').addEventListener('click',()=>openTab('dashboard'));
+document.getElementById('monitor-frame').addEventListener('load', ()=>{
+  syncMonitorTheme();
+  // links inside the monitor (e.g. "all details") change its page: light the matching tab
+  try{ document.getElementById('monitor-frame').contentWindow.addEventListener('hashchange', ()=>{
+    if(document.getElementById('panel-monitor').classList.contains('active')){ const v=monitorViewNow(); markTabs('monitor', v); history.replaceState(null,'','#'+v); }
+  }); }catch{}
+});
 
 // ── Server status (from the homelab monitor) ──────────────────────────────
 let serverStatus = null;
@@ -899,11 +909,13 @@ async function init(){
     const features=await (await fetch('/api/features')).json();
     monitorEnabled=!!features.monitor; haEnabled=!!features.homeassistant;
   }catch{ monitorEnabled=false; haEnabled=false; }
-  document.querySelector('.tab-btn[data-tab="monitor"]').style.display = monitorEnabled ? '' : 'none';
+  document.querySelectorAll('.mon-tab').forEach(b=>b.style.display = monitorEnabled ? '' : 'none');
   document.querySelector('#rb-menu [data-tab="monitor"]').style.display = monitorEnabled ? '' : 'none';
   await loadConfig();
   loadStatus(); loadHA();
-  if(location.hash==='#monitor' && monitorEnabled) openTab('monitor');
+  const MONITOR_VIEWS=['overview','issues','machines','logs','chat','settings'];
+  const h=location.hash.slice(1);
+  if(monitorEnabled && (h==='monitor' || MONITOR_VIEWS.includes(h))) openTab('monitor', h==='monitor' ? 'overview' : h);
   else if(location.hash==='#editor') openTab('editor');
 }
 buildThemeGrid();

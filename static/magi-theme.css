@@ -1,0 +1,183 @@
+/* Homepage rules for the "Eva MAGI" theme (NERV / MAGI control room: black, emergency orange,
+   toxic yellow, blood red). Loaded only while that theme is selected; <html> then has class "mg".
+   Rules of the style: square corners, no glows, shadows or fill gradients, ALL-CAPS heavy sans
+   for labels, tall serif numerals for numbers, corner-bracket frames, red only for real alarms.
+   Emoji service icons are hidden here (the style has none); each card shows its unit number instead. */
+
+.mg {
+  --mg-bg: #000; --mg-o: #ff6600; --mg-o2: #ff8800; --mg-y: #ffcc00; --mg-r: #ff0000; --mg-dim: #3a1700;
+  --mg-sans: "Arial Black", "Helvetica Neue", Impact, Arial, sans-serif;
+  --mg-serif: "Times New Roman", Century, serif;
+}
+.mg *, .mg *::before, .mg *::after { border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important; }
+.mg body { background: var(--mg-bg); color: var(--mg-o); font-family: var(--mg-sans); font-weight: 900; transition: none; }
+.mg ::selection { background: var(--mg-o); color: #000; }
+.mg * { scrollbar-color: var(--mg-o) #000; }
+/* scanlines (the base page already draws faint ones; these are the theme's darker set) */
+.mg body::before { background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); }
+
+/* Shared label idiom: uppercase heavy sans, tracked */
+.mg .greeting, .mg .site-subtitle, .mg #date, .mg .tab-btn, .mg .group-label, .mg .card-name, .mg .card-desc,
+.mg .card-url, .mg .btn, .mg .palette-btn, .mg .status-strip, .mg .ha-msg, .mg .ha-state, .mg footer,
+.mg .editor-title, .mg #save-status, .mg .theme-modal-title, .mg .swatch-name, .mg .service-row-header span,
+.mg .emoji-no-results {
+  font-family: var(--mg-sans); font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;
+}
+
+/* Corner brackets: one element, eight background layers (colour in --c) */
+.mg .card, .mg .status-strip, .mg .ha-msg, .mg .editor-group, .mg .theme-modal, .mg .emoji-modal {
+  --c: var(--mg-o); --n: 12px;
+  background:
+    linear-gradient(var(--c),var(--c)) 0 0/var(--n) 2px no-repeat,
+    linear-gradient(var(--c),var(--c)) 0 0/2px var(--n) no-repeat,
+    linear-gradient(var(--c),var(--c)) 100% 0/var(--n) 2px no-repeat,
+    linear-gradient(var(--c),var(--c)) 100% 0/2px var(--n) no-repeat,
+    linear-gradient(var(--c),var(--c)) 0 100%/var(--n) 2px no-repeat,
+    linear-gradient(var(--c),var(--c)) 0 100%/2px var(--n) no-repeat,
+    linear-gradient(var(--c),var(--c)) 100% 100%/var(--n) 2px no-repeat,
+    linear-gradient(var(--c),var(--c)) 100% 100%/2px var(--n) no-repeat,
+    var(--mg-bg);
+  border: 1px solid var(--mg-dim);
+}
+
+/* ── Header: title, hero clock, hazard stripe ── */
+.mg header { border-bottom: 0; padding-bottom: 1.75rem; }
+.mg header::after {
+  left: 0; right: 0; width: auto; bottom: 0; height: 10px;
+  background: repeating-linear-gradient(-45deg, var(--mg-o) 0 10px, #000 10px 20px);
+}
+.mg .greeting { color: var(--mg-y); font-size: 11px; letter-spacing: 2px; }
+.mg .site-title { font-family: var(--mg-sans); font-weight: 900; text-transform: uppercase; letter-spacing: 3px; color: var(--mg-o); font-size: 1.9rem; }
+.mg .site-subtitle { color: var(--mg-o2); font-size: 11px; }
+.mg .site-logo { filter: none; }
+/* the clock is a tall serif hero numeral; transform does not change layout size, so reserve the room */
+.mg #clock {
+  font-family: var(--mg-serif); font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--mg-y);
+  font-size: 2.6rem; line-height: 1; display: inline-block; transform: scaleY(1.5); transform-origin: 0 100%;
+  margin-top: 1.35rem;
+}
+.mg #date { color: var(--mg-o2); font-size: 10px; margin-top: .35rem; }
+.mg .palette-btn { background: #000; border: 2px solid var(--mg-o); color: var(--mg-o); font-size: 11px; }
+.mg .palette-btn:hover { background: var(--mg-o); color: #000; border-color: var(--mg-o); }
+.mg .palette-dot { background: var(--mg-y); width: 8px; height: 8px; }
+
+/* ── Tabs as label tabs ── */
+.mg nav { border-bottom: 1px solid var(--mg-dim); gap: 6px; padding-top: .75rem; }
+.mg .tab-btn { color: var(--mg-o); font-size: 11px; letter-spacing: 2px; border: 2px solid var(--mg-o); border-bottom: 0; padding: .35rem .9rem; margin: 0; background: #000; }
+.mg .tab-btn:hover { color: var(--mg-y); border-color: var(--mg-y); }
+.mg .tab-btn.active { background: var(--mg-o); color: #000; border-color: var(--mg-o); }
+
+/* ── Dashboard ── */
+.mg .group { animation: none; opacity: 1; transform: none; }
+/* group names become orange label tabs (the base dim rule after them is dropped) */
+.mg .group-label {
+  display: inline-block; background: var(--mg-o); color: #000; padding: 1px 8px; line-height: 1.6;
+  font-size: 11px; letter-spacing: 2px; margin-bottom: 10px;
+}
+.mg .group-label::after { content: none; }
+
+.mg .cards { gap: 10px; border: 0; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); counter-reset: unit; }
+.mg .card { padding: 14px 16px 12px; margin: 0; gap: 4px; counter-increment: unit; }
+.mg .card::before { content: none; }
+.mg .card::after {
+  content: counter(unit, decimal-leading-zero); position: absolute; top: 6px; right: 12px;
+  font-family: var(--mg-serif); font-weight: 700; font-size: 26px; line-height: 1; color: var(--mg-o2);
+  transform: scaleY(1.5); transform-origin: 100% 0;
+}
+.mg .card:hover { --c: var(--mg-y); background-color: #000; border-color: var(--mg-dim); }
+.mg .card:hover .card-name { color: var(--mg-y); }
+.mg .card-icon { display: none; }
+.mg .card-name { color: var(--mg-o); font-size: 13px; letter-spacing: 1.5px; padding-right: 2.2rem; }
+.mg .card-desc { color: var(--mg-o2); font-size: 10px; letter-spacing: 1px; font-weight: 900; }
+.mg .card-url { color: var(--mg-y); font-size: 10px; letter-spacing: 1px; border-top: 1px solid var(--mg-dim); padding-top: 6px; margin-top: auto; }
+
+/* status strip: a SYSTEM STATUS panel; red frame only when something is critical */
+.mg .status-strip { position: relative; margin-top: 12px; padding: 16px 16px 12px; font-size: 11px; letter-spacing: 1.5px; }
+.mg .status-strip::before {
+  content: "SYSTEM STATUS"; position: absolute; top: -10px; left: 14px; background: var(--mg-o); color: #000;
+  padding: 1px 8px; font-size: 10px; letter-spacing: 2px; line-height: 1.6;
+}
+.mg .status-strip:hover { --c: var(--mg-y); border-color: var(--mg-dim); }
+.mg .status-strip:has(.status-dot.critical) { --c: var(--mg-r); }
+.mg .status-dot { width: 12px; height: 12px; background: var(--mg-dim); }
+.mg .status-dot.ok { background: var(--mg-y); }
+.mg .status-dot.warning { background: var(--mg-o); }
+.mg .status-dot.critical { background: var(--mg-r); animation: mg-blink 1s steps(1) infinite; }
+.mg .status-text { color: var(--mg-y); }
+.mg .status-strip:has(.status-dot.critical) .status-text { color: var(--mg-r); }
+.mg .status-sub, .mg .status-counts { color: var(--mg-o2); }
+.mg .status-counts b { color: var(--mg-y); }
+.mg .status-counts b.crit { color: var(--mg-r); }
+.mg .status-counts b.warn { color: var(--mg-o); }
+
+/* Home Assistant states: values in yellow, off states orange (never dim, so they stay readable) */
+.mg .ha-state { font-family: var(--mg-serif); text-transform: none; letter-spacing: 0; font-size: 22px; color: var(--mg-y); }
+.mg .ha-card.ha-on .ha-state { color: var(--mg-y); }
+.mg .ha-card.ha-off .ha-state { color: var(--mg-o2); font-weight: 700; }
+.mg .ha-msg { color: var(--mg-o2); font-size: 11px; }
+
+/* ── Controls ── */
+.mg button { font-family: var(--mg-sans); }
+.mg .btn { background: #000; border: 2px solid var(--mg-o); color: var(--mg-o); font-size: 11px; letter-spacing: 1.5px; }
+.mg .btn:hover { background: #000; border-color: var(--mg-y); color: var(--mg-y); }
+.mg .btn-accent, .mg .btn-accent:hover { background: var(--mg-o); border-color: var(--mg-o); color: #000; filter: none; }
+.mg .btn-accent:hover { background: var(--mg-y); border-color: var(--mg-y); }
+.mg .btn-ghost { border-color: var(--mg-dim); color: var(--mg-o2); }
+.mg input, .mg .svc-input, .mg .group-name-input, .mg .emoji-search {
+  font-family: var(--mg-sans); font-weight: 900; color: var(--mg-y); background: #000; border: 0; border-bottom: 1px solid var(--mg-dim);
+}
+.mg input:focus, .mg .svc-input:focus, .mg .group-name-input:focus, .mg .emoji-search:focus { border-bottom-color: var(--mg-o); outline: none; }
+.mg input::placeholder { color: var(--mg-o2); opacity: .6; }
+.mg #save-status { color: var(--mg-o2); }
+.mg #save-status.ok { color: var(--mg-y); }
+.mg #save-status.err { color: var(--mg-r); }
+
+/* ── Editor ── */
+.mg .editor-title { color: var(--mg-o); font-size: 11px; letter-spacing: 2px; }
+.mg .editor-group { border-color: var(--mg-dim); }
+.mg .editor-group + .editor-group { margin-top: 12px; }
+.mg .editor-group-header, .mg .service-row, .mg .service-row-header { border-bottom-color: var(--mg-dim); }
+.mg .service-row-header { background: #000; }
+.mg .service-row-header span { color: var(--mg-o2); font-size: 9px; letter-spacing: 2px; }
+.mg .service-row:hover { background: #000; }
+.mg .svc-delete { color: var(--mg-o2); }
+.mg .svc-delete:hover { color: var(--mg-r); }
+.mg .emoji-pick-btn { background: #000; border: 1px solid var(--mg-dim); }
+.mg .emoji-pick-btn:hover { border-color: var(--mg-o); }
+
+/* ── Modals ── */
+.mg .theme-modal-overlay, .mg .emoji-modal-overlay { background: rgba(0,0,0,.8); }
+.mg .theme-modal-header, .mg .emoji-modal-header, .mg .emoji-categories { border-bottom-color: var(--mg-dim); }
+.mg .theme-modal-title { color: var(--mg-o); font-size: 11px; letter-spacing: 2px; }
+.mg .theme-modal-close, .mg .emoji-modal-close { color: var(--mg-o); }
+.mg .theme-modal-close:hover, .mg .emoji-modal-close:hover { color: var(--mg-y); }
+.mg .theme-swatch { background: #000; border: 2px solid var(--mg-dim); }
+.mg .theme-swatch:hover { border-color: var(--mg-o); }
+.mg .theme-swatch.active { border-color: var(--mg-y); }
+.mg .swatch-name { color: var(--mg-o); font-size: 9px; letter-spacing: 1px; }
+.mg .emoji-cat-btn { color: var(--mg-o2); }
+.mg .emoji-cat-btn.active { border-bottom-color: var(--mg-o); }
+.mg .emoji-btn:hover { background: #000; border-color: var(--mg-o); }
+
+/* ── Monitor tab frame and footer ── */
+.mg #monitor-frame { background: #000; }
+.mg footer { border-top: 1px solid var(--mg-dim); color: var(--mg-o2); font-size: 10px; letter-spacing: 2px; }
+
+@keyframes mg-blink { 50% { opacity: .1; } }
+@media (prefers-reduced-motion: reduce) {
+  .mg .status-dot.critical { animation: none; }
+}
+@media (max-width: 700px) {
+  /* header in two rows: title, then clock and Theme button */
+  .mg header { flex-wrap: wrap; row-gap: .6rem; padding-top: 1.25rem; }
+  .mg .header-right { width: 100%; justify-content: space-between; align-items: flex-end; gap: .75rem; }
+  .mg #clock { font-size: 1.8rem; margin-top: .95rem; }
+  .mg .site-title { font-size: 1.3rem; letter-spacing: 2px; }
+  .mg .tab-btn { padding: .3rem .55rem; letter-spacing: 1px; font-size: 10px; }
+  .mg .cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mg .card { padding: 12px 10px 10px; }
+  .mg .card::after { font-size: 20px; right: 8px; }
+  .mg .card-name { font-size: 11px; letter-spacing: 1px; padding-right: 1.6rem; }
+  .mg .status-strip { flex-wrap: wrap; gap: .5rem .9rem; }
+  .mg .status-counts { margin-left: 0; flex-wrap: wrap; gap: .4rem .9rem; }
+}
